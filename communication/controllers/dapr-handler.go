@@ -38,14 +38,13 @@ func DaprEmailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Email Sent Successfully!"))
 }
 
-
 func DaprSubscriptions(w http.ResponseWriter, r *http.Request) {
 	emailSubscribeResponse := &common.Subscription{
 		PubsubName: "communication",
 		Topic:      "email_delivery",
 		Route:      "/send_email",
 	}
-	
+
 	var subscriptionResponse []common.Subscription
 	subscriptionResponse = append(subscriptionResponse, *emailSubscribeResponse)
 	w.Header().Set("Content-Type", "application/json")

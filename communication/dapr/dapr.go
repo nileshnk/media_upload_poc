@@ -10,37 +10,27 @@ import (
 	Dapr "github.com/dapr/go-sdk/client"
 	"github.com/dapr/go-sdk/service/common"
 	daprCommon "github.com/dapr/go-sdk/service/common"
-	daprd "github.com/dapr/go-sdk/service/http"
 	Config "github.com/nileshnk/media_upload_poc/communication/config"
+	Types "github.com/nileshnk/media_upload_poc/communication/types"
 )
 
 var DaprClient Dapr.Client
 var DaprServer daprCommon.Service
 
-func DaprInit(ctx context.Context) (error) {
+func DaprInit(ctx context.Context) error {
 	var DaprClientErr error
 
-	addr := Config.GetConfig.Dapr.Host + ":" + strconv.Itoa(Config.GetConfig.Dapr.Port)
+	addr := Config.GetConfig.Dapr.Host + ":" + strconv.Itoa(Config.GetConfig.Dapr.GRPCPort)
 	Config.Validate([]string{addr})
 
 	DaprClient, DaprClientErr = Dapr.NewClientWithAddressContext(ctx, addr)
 	if DaprClientErr != nil {
 		return DaprClientErr
 	}
-	
-	DaprServer = daprd.NewService(addr)
-
 	return nil
 }
 
-type EmailPayload struct {
-	Recipient []string `json:"recipient"`
-	Subject string `json:"subject"`
-	Body string `json:"body"`
-}
-
-
-func SendEmail(ctx context.Context, payload EmailPayload) error {
+func SendEmail(ctx context.Context, payload Types.EmailPayload) error {
 	payloadBytes, payloadBytesErr := json.Marshal(payload)
 	if payloadBytesErr != nil {
 		return payloadBytesErr
@@ -52,7 +42,7 @@ func SendEmail(ctx context.Context, payload EmailPayload) error {
 
 	_, err := DaprClient.InvokeMethodWithContent(ctx, appID, method, verb, &Dapr.DataContent{
 		ContentType: "application/json",
-		Data: payloadBytes,
+		Data:        payloadBytes,
 	})
 
 	if err != nil {
@@ -61,7 +51,7 @@ func SendEmail(ctx context.Context, payload EmailPayload) error {
 	return nil
 }
 
-func DaprServiceSetup (ctx context.Context) {
+func DaprServiceSetup(ctx context.Context) {
 	// Add a handler to the service server
 	emailSubscription := &common.Subscription{
 		PubsubName: "communication",
@@ -80,7 +70,7 @@ func DaprServiceSetup (ctx context.Context) {
 }
 
 func emailSubscriptionHandler(ctx context.Context, e *common.TopicEvent) (retry bool, err error) {
-	var payload EmailPayload
+	var payload Types.EmailPayload
 
 	jsonParseErr := json.Unmarshal([]byte(*e.Data.(*string)), &payload)
 

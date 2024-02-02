@@ -16,9 +16,22 @@ type Config struct {
 		Host string
 	}
 
+	Email struct {
+		// Host is the email host
+		Host string
+		// Port is the email port
+		Port int
+		// User is the email user
+		User string
+		// Password is the email password
+		Password string
+		// From is the email from
+		From string
+	}
+
 	Dapr struct {
 		// Port is the port to listen on
-		Port int
+		GRPCPort int
 		// Host is the host to listen on
 		Host string
 
@@ -26,12 +39,11 @@ type Config struct {
 
 		DaprAppCommunication struct {
 			DaprAppID string
-			Method struct {
+			Method    struct {
 				SendEmail string
 			}
 		}
 	}
-
 }
 
 // C is the global configuration
@@ -42,11 +54,17 @@ func Load() {
 	// load from environment variables
 	GetConfig.Server.Port, _ = strconv.Atoi(os.Getenv("SERVER_PORT"))
 	GetConfig.Server.Host = os.Getenv("SERVER_HOST")
-	GetConfig.Dapr.Port, _ = strconv.Atoi(os.Getenv("DAPR_PORT"))
+	GetConfig.Dapr.GRPCPort, _ = strconv.Atoi(os.Getenv("DAPR_GRPC_PORT"))
 	GetConfig.Dapr.Host = os.Getenv("DAPR_HOST")
 	GetConfig.Dapr.DaprAppID = "auth"
 	GetConfig.Dapr.DaprAppCommunication.DaprAppID = "communication"
 	GetConfig.Dapr.DaprAppCommunication.Method.SendEmail = "email_delivery"
+	GetConfig.Email.Host = os.Getenv("EMAIL_HOST")
+	GetConfig.Email.Port, _ = strconv.Atoi(os.Getenv("EMAIL_PORT"))
+	GetConfig.Email.User = os.Getenv("EMAIL_USER")
+	GetConfig.Email.Password = os.Getenv("EMAIL_PASSWORD")
+	GetConfig.Email.From = os.Getenv("EMAIL_FROM")
+
 }
 
 func IsEmpty(s string) bool {
