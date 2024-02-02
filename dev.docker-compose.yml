@@ -5,7 +5,9 @@ services:
     container_name: auth
     build:
       context: auth
-      dockerfile: Dockerfile
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./auth:/src
     ports:
       - "5100:5100"
     env_file:
@@ -49,7 +51,9 @@ services:
     container_name: communication
     build:
       context: communication
-      dockerfile: Dockerfile
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./communication:/src
     env_file:
       - env/communication.env
     ports:
