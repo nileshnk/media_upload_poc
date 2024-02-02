@@ -8,14 +8,14 @@ import (
 
 	Dapr "github.com/dapr/go-sdk/client"
 	Config "github.com/nileshnk/media_upload_poc/auth/config"
+	Types "github.com/nileshnk/media_upload_poc/auth/types"
 )
 
 var DaprClient Dapr.Client
 
-
-func DaprInit(ctx context.Context) (error) {
+func DaprInit(ctx context.Context) error {
 	var DaprClientErr error
-	addr := Config.GetConfig.Dapr.Host + ":" + strconv.Itoa(Config.GetConfig.Dapr.Port)
+	addr := Config.GetConfig.Dapr.Host + ":" + strconv.Itoa(Config.GetConfig.Dapr.GRPCPort)
 	fmt.Println("Dapr Host: ", addr)
 	DaprClient, DaprClientErr = Dapr.NewClientWithAddressContext(ctx, addr)
 	if DaprClientErr != nil {
@@ -24,27 +24,16 @@ func DaprInit(ctx context.Context) (error) {
 	return nil
 }
 
-type EmailPayload struct {
-	Recipient []string `json:"recipient"`
-	Subject string `json:"subject"`
-	Body string `json:"body"`
-}
-
-
-func SendEmail(ctx context.Context, payload EmailPayload) error {
+func SendEmail(ctx context.Context, payload Types.EmailPayload) error {
 	payloadBytes, payloadBytesErr := json.Marshal(payload)
 	if payloadBytesErr != nil {
 		return payloadBytesErr
 	}
 
-	appID := Config.GetConfig.Dapr.DaprAppCommunication.DaprAppID
-	method := Config.GetConfig.Dapr.DaprAppCommunication.Method.SendEmail
-	verb := "POST"
+	pubsubName := Config.GetConfig.Dapr.DaprAppCommunication.DaprAppID
+	topicName := Config.GetConfig.Dapr.DaprAppCommunication.TopicName.SendEmail
 
-	_, err := DaprClient.InvokeMethodWithContent(ctx, appID, method, verb, &Dapr.DataContent{
-		ContentType: "application/json",
-		Data: payloadBytes,
-	})
+	err := DaprClient.PublishEvent(ctx, pubsubName, topicName, payloadBytes)
 
 	if err != nil {
 		return err

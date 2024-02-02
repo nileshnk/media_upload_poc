@@ -3,11 +3,14 @@ module github.com/nileshnk/media_upload_poc/auth
 go 1.21.3
 
 require github.com/dapr/go-sdk v1.9.1
-require github.com/joho/godotenv v1.3.0
+
+require (
+	github.com/go-chi/chi/v5 v5.0.10
+	github.com/joho/godotenv v1.3.0
+)
 
 require (
 	github.com/dapr/dapr v1.12.0-rc.4 // indirect
-	github.com/go-chi/chi/v5 v5.0.10 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect

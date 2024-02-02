@@ -2,23 +2,21 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/joho/godotenv"
-	Config "github.com/nileshnk/media_upload_poc/communication/config"
-	dapr "github.com/nileshnk/media_upload_poc/communication/dapr"
+	Config "github.com/nileshnk/media_upload_poc/auth/config"
+	dapr "github.com/nileshnk/media_upload_poc/auth/dapr"
 )
 
 func main() {
 
 	// Load environment variables
-	envErr := godotenv.Load(".env")
-	CheckErrorWithPanic(envErr)
 	Config.Load()
-	
+
 	// Create a new context
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -29,14 +27,15 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	
+
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hi"))
+		w.Write([]byte("Auth Service"))
 	})
+
 	serverHost := Config.GetConfig.Server.Host
 	serverPort := Config.GetConfig.Server.Port
 	addr := serverHost + ":" + strconv.Itoa(serverPort)
-
+	fmt.Println("Server is running on ", addr)
 	http.ListenAndServe(addr, r)
 }
 
