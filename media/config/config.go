@@ -43,10 +43,13 @@ type Config struct {
 			BucketName      string
 			EndPoint        string
 		}
+		Directory string
 	}
-
-
 }
+
+const (
+	HttpInternalServerErrorMessage = "Internal Server Error"
+)
 
 // C is the global configuration
 var GetConfig Config
@@ -65,6 +68,7 @@ func Load() {
 	GetConfig.Media.AWS.Region = os.Getenv("AWS_REGION")
 	GetConfig.Media.AWS.BucketName = os.Getenv("AWS_BUCKET_NAME")
 	GetConfig.Media.AWS.EndPoint = os.Getenv("AWS_ENDPOINT")
+	GetConfig.Media.Directory = "/files"
 	GetConfig.Dapr.DaprAppID = "auth"
 	GetConfig.Dapr.DaprAppCommunication.DaprAppID = "communication"
 	GetConfig.Dapr.DaprAppCommunication.TopicName.SendEmail = "email_delivery"

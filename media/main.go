@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	Config "github.com/nileshnk/media_upload_poc/media/config"
+	"github.com/nileshnk/media_upload_poc/media/dapr"
 	routes "github.com/nileshnk/media_upload_poc/media/routes"
 )
 
@@ -34,17 +35,19 @@ func main() {
 	// godotenv.Load(".env")
 	Config.Load()
 
-
 	// create context
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel();
+	defer cancel()
+
+	// initialize dapr client
+	DaprClientErr := dapr.DaprInit(ctx)
+	CheckErrorWithPanic(DaprClientErr)
+	dapr.TestServiceInvoke(ctx)
 
 	// create router
 	r := chi.NewRouter()
 
 	r.Mount("/", routes.MainRouter(ctx))
-
-
 
 	serverHost := Config.GetConfig.Server.HTTPHost
 	serverPort := Config.GetConfig.Server.HTTPPort
