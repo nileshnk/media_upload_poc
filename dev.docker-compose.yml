@@ -93,6 +93,98 @@ services:
       - placement
     network_mode: service:communication
 
+  media:
+    container_name: media
+    build:
+      context: media
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./media:/src
+    env_file:
+      - env/media.env
+    ports:
+      - "5102:5102"
+    networks:
+      - mynetwork
+
+  media-sidecar:
+    container_name: "media-sidecar"
+    image: "daprio/daprd:edge"
+    command:
+      [
+        "./daprd",
+        "--app-id",
+        "media",
+        "--app-port",
+        "5102",
+        "--dapr-http-port",
+        "3512",
+        "--dapr-grpc-port",
+        "35102",
+        "--placement-host-address",
+        "placement:50006",
+        "--log-level",
+        "debug",
+        "--resources-path",
+        "/dapr/components",
+        "--config",
+        "/dapr/config/config.yaml",
+        "--metrics-port",
+        "9582",
+      ]
+    volumes:
+      - ./dapr/:/dapr/
+    depends_on:
+      - media
+      - placement
+    network_mode: service:media
+
+  user_management:
+    container_name: user_management
+    build:
+      context: user_management
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./user_management:/src
+    env_file:
+      - env/user_management.env
+    ports:
+      - "5103:5103"
+    networks:
+      - mynetwork
+
+  user_management-sidecar:
+    container_name: "user_management-sidecar"
+    image: "daprio/daprd:edge"
+    command:
+      [
+        "./daprd",
+        "--app-id",
+        "user_management",
+        "--app-port",
+        "5103",
+        "--dapr-http-port",
+        "3513",
+        "--dapr-grpc-port",
+        "35103",
+        "--placement-host-address",
+        "placement:50006",
+        "--log-level",
+        "debug",
+        "--resources-path",
+        "/dapr/components",
+        "--config",
+        "/dapr/config/config.yaml",
+        "--metrics-port",
+        "9583",
+      ]
+    volumes:
+      - ./dapr/:/dapr/
+    depends_on:
+      - user_management
+      - placement
+    network_mode: service:user_management
+
   redis:
     container_name: "dapr-redis"
     image: redis:alpine
