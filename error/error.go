@@ -5,25 +5,25 @@ import (
 )
 
 type CustomError struct {
-	Err error
+	Err     error
 	Message string
-	Code string
+	Code    string
 }
 
 // Error Code
 const (
-	InvalidRequest = "error/"
-	InvalidResponse = "InvalidResponse"
-	InvalidConfig = "InvalidConfig"
-	InvalidAuth = "InvalidAuth"
-	InvalidEmail = "InvalidEmail"
-	InvalidFile = "InvalidFile"
-	InvalidFileUpload = "InvalidFileUpload"
+	InvalidRequest      = "error/"
+	InvalidResponse     = "InvalidResponse"
+	InvalidConfig       = "InvalidConfig"
+	InvalidAuth         = "InvalidAuth"
+	InvalidEmail        = "InvalidEmail"
+	InvalidFile         = "InvalidFile"
+	InvalidFileUpload   = "InvalidFileUpload"
 	InvalidFileDownload = "InvalidFileDownload"
-	InvalidFileDelete = "InvalidFileDelete"
-	InvalidFileList = "InvalidFileList"
-	InvalidFileRename = "InvalidFileRename"
-	InvalidFileMove = "InvalidFileMove"
+	InvalidFileDelete   = "InvalidFileDelete"
+	InvalidFileList     = "InvalidFileList"
+	InvalidFileRename   = "InvalidFileRename"
+	InvalidFileMove     = "InvalidFileMove"
 )
 
 var ErrorCodeMap = map[string]string{
@@ -31,9 +31,8 @@ var ErrorCodeMap = map[string]string{
 	"0002": "Invalid Response",
 }
 
-
 func (e *CustomError) Error() string {
-	
+
 	return fmt.Sprintf("%s: %s", e.Message, e.Err)
 }
 
@@ -42,9 +41,9 @@ func (e *CustomError) Unwrap() error {
 }
 
 func New(message string, err error) *CustomError {
-	
+
 	return &CustomError{
-		Err: err,
+		Err:     err,
 		Message: message,
 	}
 }
