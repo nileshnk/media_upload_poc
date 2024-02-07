@@ -34,7 +34,6 @@ func SendEmail(ctx context.Context, payload Types.EmailPayload) error {
 	topicName := Config.GetConfig.Dapr.DaprAppCommunication.TopicName.SendEmail
 
 	err := DaprClient.PublishEvent(ctx, pubsubName, topicName, payloadBytes)
-
 	if err != nil {
 		return err
 	}

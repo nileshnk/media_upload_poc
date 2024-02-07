@@ -10,9 +10,25 @@ type Config struct {
 	// Server is the server configuration
 	Server struct {
 		// Port is the port to listen on
-		Port int
+		HTTPPort int
 		// Host is the host to listen on
+		HTTPHost string
+
+		GRPCPort int
+		GRPCHost string
+	}
+
+	Email struct {
+		// Host is the email host
 		Host string
+		// Port is the email port
+		Port int
+		// User is the email user
+		User string
+		// Password is the email password
+		Password string
+		// From is the email from
+		From string
 	}
 
 	Dapr struct {
@@ -39,8 +55,10 @@ var GetConfig Config
 // Load loads the configuration
 func Load() {
 	// load from environment variables
-	GetConfig.Server.Port, _ = strconv.Atoi(os.Getenv("SERVER_PORT"))
-	GetConfig.Server.Host = os.Getenv("SERVER_HOST")
+	GetConfig.Server.HTTPPort, _ = strconv.Atoi(os.Getenv("SERVER_HTTP_PORT"))
+	GetConfig.Server.HTTPHost = os.Getenv("SERVER_HTTP_HOST")
+	GetConfig.Server.GRPCPort, _ = strconv.Atoi(os.Getenv("SERVER_GRPC_PORT"))
+	GetConfig.Server.GRPCHost = os.Getenv("SERVER_GRPC_HOST")
 	GetConfig.Dapr.GRPCPort, _ = strconv.Atoi(os.Getenv("DAPR_GRPC_PORT"))
 	GetConfig.Dapr.Host = os.Getenv("DAPR_HOST")
 	GetConfig.Dapr.DaprAppID = "auth"
